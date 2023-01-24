@@ -1,0 +1,51 @@
+{
+  "name": "@bistroo/capacitor-plugin-sunmi",
+  "version": "0.0.1",
+  "main": "dist/plugin.cjs.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "unpkg": "dist/plugin.js",
+  "files": [
+    "android/src/main/",
+    "android/build.gradle",
+    "dist/"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bistroo/capacitor-plugin-sunmi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bistroo/capacitor-plugin-sunmi/issues"
+  },
+  "keywords": [
+    "capacitor",
+    "plugin",
+    "native",
+    "sunmi"
+  ],
+  "scripts": {
+    "verify": "cd android && ./gradlew clean build test && cd ..",
+    "docgen": "docgen --api SunmiPlugin --output-json dist/docs.json --output-readme README.md",
+    "build": "rm -rf dist && tsc && rollup -c rollup.config.js && pnpm docgen",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^4.0.0",
+    "@capacitor/core": "^4.0.0",
+    "@capacitor/docgen": "^0.0.18",
+    "@ionic/eslint-config": "^0.3.0",
+    "@ionic/prettier-config": "^1.0.1",
+    "@ionic/swiftlint-config": "^1.1.2",
+    "rollup": "^2.32.0",
+    "typescript": "~4.1.5"
+  },
+  "peerDependencies": {
+    "@capacitor/core": "^4.0.0"
+  },
+  "capacitor": {
+    "android": {
+      "src": "android"
+    }
+  }
+}
