@@ -55,5 +55,5 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
 
-    implementation 'com.sunmi:printerx:1.0.9'
+    implementation 'com.sunmi:printerlibrary:1.0.19'
 }
