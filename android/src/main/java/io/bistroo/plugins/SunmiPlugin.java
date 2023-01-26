@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.RemoteException;
 import android.util.Base64;
+import android.util.Log;
 
 import com.getcapacitor.JSArray;
 import com.getcapacitor.Plugin;
@@ -137,20 +138,24 @@ public class SunmiPlugin extends Plugin {
     public void load() {
         super.load();
 
+        Log.d(TAG, "Start plugin");
+
         InnerPrinterCallback innerPrinterCallback = new InnerPrinterCallback() {
             @Override
             protected void onConnected(SunmiPrinterService service) {
+                Log.d(TAG, "Connected to printer");
+
                 mPrinterService = service;
             }
 
             @Override
             protected void onDisconnected() {
-
+                Log.d(TAG, "Disconnected");
             }
         };
 
         try {
-            InnerPrinterManager.getInstance().bindService(getBridge().getContext(), innerPrinterCallback);
+            InnerPrinterManager.getInstance().bindService(getContext(), innerPrinterCallback);
         } catch (InnerPrinterException e) {
             e.printStackTrace();
         }
