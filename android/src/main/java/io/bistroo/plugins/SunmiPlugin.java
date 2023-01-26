@@ -123,7 +123,7 @@ public class SunmiPlugin extends Plugin {
         call.resolve();
     }
 
-    @PluginMethod
+    @PluginMethod(returnType = PluginMethod.RETURN_NONE)
     public void image(PluginCall call) throws RemoteException {
         byte[] decodedString = Base64.decode(call.getString("image"), Base64.DEFAULT);
         Bitmap image = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
