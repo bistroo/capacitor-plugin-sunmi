@@ -1,81 +1,50 @@
 import { registerPlugin } from '@capacitor/core'
-import type { SunmiPlugin } from './definitions'
+import type { SunmiPlugin, TableRow } from './definitions'
 
 const sunmiPlugin = registerPlugin<SunmiPlugin>('SunmiPlugin')
 
-type TableRow = {
-  value: string
-  size: number
-  alignment: 0 | 1 | 2
+export function start() {
+  sunmiPlugin.start()
 }
 
-interface Builder {
-  table(rows: TableRow[]): this
-  text(value: string): this
-  line(text?: string): this
-  left(): this
-  center(): this
-  right(): this
-  bold(bold?: boolean): this
-  image(image: string): this
+export function table(options: { rows: TableRow[] }) {
+  sunmiPlugin.table(options)
 }
 
-class CapacitorBuilder implements Builder {
-  constructor() {
-    sunmiPlugin.start()
-  }
-
-  table(rows: TableRow[]) {
-    sunmiPlugin.table({ rows })
-
-    return this
-  }
-
-  text(value: string) {
-    sunmiPlugin.text({ text: value })
-
-    return this
-  }
-
-  line(text?: string) {
-    sunmiPlugin.line({ text: text ?? '' })
-
-    return this
-  }
-
-  left() {
-    sunmiPlugin.align({ direction: "LEFT" })
-
-    return this
-  }
-
-  center() {
-    sunmiPlugin.align({ direction: "CENTER" })
-
-    return this
-  }
-
-  right() {
-    sunmiPlugin.align({ direction: "RIGHT" })
-
-    return this
-  }
-
-  bold(bold?: boolean) {
-    bold ? sunmiPlugin.bold() : sunmiPlugin.normal()
-
-    return this
-  }
-
-  image(image: string) {
-    sunmiPlugin.image({ image })
-
-    return this
-  }
+export function text(options: { text: string }) {
+  sunmiPlugin.text(options)
 }
 
-export { CapacitorBuilder as Builder }
+export function line(options: { text?: string, wrap: boolean }) {
+  sunmiPlugin.line(options)
+}
+
+export function wrap() {
+  sunmiPlugin.wrap()
+}
+
+export function bold() {
+  sunmiPlugin.bold()
+}
+
+export function normal() {
+  sunmiPlugin.normal()
+}
+
+export function align(options: { direction: "LEFT" | "CENTER" | "RIGHT" }) {
+  sunmiPlugin.align(options)
+}
+
+export function image(options: { image: string }) {
+  sunmiPlugin.image(options)
+}
+
+export async function deviceInfo() {
+  return await sunmiPlugin.deviceInfo()
+}
 
 export async function print() {
   await sunmiPlugin.print()
 }
+
+export { TableRow }

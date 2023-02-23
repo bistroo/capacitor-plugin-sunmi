@@ -1,5 +1,7 @@
 package io.bistroo.plugins;
 
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -8,6 +10,7 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.getcapacitor.JSArray;
+import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -16,6 +19,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.sunmi.peripheral.printer.InnerPrinterCallback;
 import com.sunmi.peripheral.printer.InnerPrinterException;
 import com.sunmi.peripheral.printer.InnerPrinterManager;
+import com.sunmi.peripheral.printer.InnerResultCallback;
 import com.sunmi.peripheral.printer.SunmiPrinterService;
 
 import org.json.JSONException;
@@ -67,8 +71,23 @@ public class SunmiPlugin extends Plugin {
 
     @PluginMethod(returnType = PluginMethod.RETURN_NONE)
     public void line(PluginCall call) throws RemoteException {
+        String text = call.getString("text");
+        Boolean wrap = call.getBoolean("wrap");
+
+        if (text != null) {
+            mPrinterService.printText(text, null);
+        }
+
+        if (wrap != null && wrap) {
+            mPrinterService.lineWrap(1, null);
+        }
+
+        call.resolve();
+    }
+
+    @PluginMethod(returnType = PluginMethod.RETURN_NONE)
+    public void wrap(PluginCall call) throws RemoteException {
         mPrinterService.lineWrap(1, null);
-        mPrinterService.printText(call.getString("text"), null);
 
         call.resolve();
     }
@@ -119,7 +138,37 @@ public class SunmiPlugin extends Plugin {
 
     @PluginMethod
     public void print(PluginCall call) throws RemoteException {
-        mPrinterService.commitPrinterBuffer();
+        mPrinterService.commitPrinterBufferWithCallback(new InnerResultCallback() {
+            @Override
+            public void onRunResult(boolean isSuccess) {
+                Log.d(TAG, String.format("%b", isSuccess));
+            }
+
+            @Override
+            public void onReturnString(String result) {
+                Log.d(TAG, result);
+            }
+
+            @Override
+            public void onRaiseException(int code, String msg) {
+                Log.e(TAG, String.format("%s, %d", msg, code));
+
+                call.reject(msg, String.valueOf(code));
+            }
+
+            @Override
+            public void onPrintResult(int code, String msg) {
+                if (code == 0) {
+                    Log.d(TAG, msg);
+
+                    call.resolve();
+                } else {
+                    Log.e(TAG, String.format("%s, %d", msg, code));
+
+                    call.reject(msg, String.valueOf(code));
+                }
+            }
+        });
 
         call.resolve();
     }
@@ -134,11 +183,47 @@ public class SunmiPlugin extends Plugin {
         call.resolve();
     }
 
+    @PluginMethod
+    public void deviceInfo(PluginCall call) throws RemoteException {
+        String serialNumber = mPrinterService.getPrinterSerialNo();
+        String model = mPrinterService.getPrinterModal();
+
+        JSObject data = new JSObject();
+        data.put("serial_number", serialNumber);
+        data.put("model", model);
+
+        call.resolve(data);
+    }
+
     @Override
     public void load() {
         super.load();
 
         Log.d(TAG, "Start plugin");
+
+        Intent intent = new Intent();
+        intent.setPackage("woyou.aidlservice.jiuiv5");
+        intent.setAction("woyou.aidlservice.jiuiv5.IWoyouService");
+        getContext().startService(intent);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("woyou.aidlservice.jiuv5.INIT_ACTION");
+        filter.addAction("woyou.aidlservice.jiuv5.FIRMWARE_UPDATING_ACITON");
+        filter.addAction("woyou.aidlservice.jiuv5.NORMAL_ACTION");
+        filter.addAction("woyou.aidlservice.jiuv5.ERROR_ACTION");
+        filter.addAction("woyou.aidlservice.jiuv5.OUT_OF_PAPER_ACTION");
+        filter.addAction("woyou.aidlservice.jiuv5.OVER_HEATING_ACITON");
+        filter.addAction("woyou.aidlservice.jiuv5.NORMAL_HEATING_ACITON");
+        filter.addAction("woyou.aidlservice.jiuv5.COVER_OPEN_ACTION");
+        filter.addAction("woyou.aidlservice.jiuv5.COVER_ERROR_ACTION");
+        filter.addAction("woyou.aidlservice.jiuv5.KNIFE_ERROR_ACTION_1");
+        filter.addAction("woyou.aidlservice.jiuv5.KNIFE_ERROR_ACTION_2");
+        filter.addAction("woyou.aidlservice.jiuv5.FIRMWARE_UPDATING_ACITON");
+        filter.addAction("woyou.aidlservice.jiuv5.FIRMWARE_FAILURE_ACITON");
+        filter.addAction("woyou.aidlservice.jiuv5.PRINTER_NON_EXISTENT_ACITON");
+        filter.addAction("woyou.aidlservice.jiuv5.BLACKLABEL_NON_EXISTENT_ACITON");
+
+        getContext().registerReceiver(new SunmiBroadcastReceiver(), filter);
 
         InnerPrinterCallback innerPrinterCallback = new InnerPrinterCallback() {
             @Override
