@@ -7,35 +7,27 @@ pnpm add -D @bistroo/capacitor-plugin-sunmi
 ```
 
 ```typescript
-import {
-  start,
-  table,
-  line,
-  wrap,
-  align,
-  bold,
-  normal,
-  image,
-} from '@bistroo/capacitor-plugin-sunmi'
+import { Sunmi } from '@bistroo/capacitor-plugin-sunmi'
 
 // start the buffer
-start()
-
-// ...
+Sunmi.start()
+Sunmi.line('fdfdfdfd')
 
 // commit the buffer
-await print()
+await Sunmi.print()
+```
+
+Or without using a buffer
+
+```typescript
+import { Sunmi } from '@bistroo/capacitor-plugin-sunmi'
+
+Sunmi.line('fdfdfdfd')
 ```
 
 ## API
 ```typescript
-export type TableRow = {
-  value: string
-  size: number
-  alignment: 0 | 1 | 2
-}
-
-export interface SunmiPlugin {
+interface SunmiPlugin {
   start(): void
   table(options: { rows: TableRow[] }): void
   text(options: { text: string }): void
@@ -47,9 +39,17 @@ export interface SunmiPlugin {
   print(): Promise<void>
   image(options: { image: string }): void
   deviceInfo(): Promise<{ serial_number: string, model: string }>
+  addListener(
+    eventName: 'printer-state',
+    listenerFunc: (response: { status: number }) => void,
+  ): Promise<PluginListenerHandle> & PluginListenerHandle;
 }
+
+export type TableRow = {
+  value: string
+  size: number
+  alignment: 0 | 1 | 2
+}
+
+export const Sunmi: SunmiPlugin
 ```
-
-## TODO
-
-- [ ] Decent error handling

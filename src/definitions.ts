@@ -1,3 +1,5 @@
+import type { PluginListenerHandle } from '@capacitor/core'
+
 export type TableRow = {
   value: string
   size: number
@@ -16,4 +18,9 @@ export interface SunmiPlugin {
   print(): Promise<void>
   image(options: { image: string }): void
   deviceInfo(): Promise<{ serial_number: string, model: string }>
+  raw(text: string): Promise<void>
+  addListener(
+    eventName: 'printer-state',
+    listenerFunc: (response: { status: number }) => void,
+  ): Promise<PluginListenerHandle> & PluginListenerHandle;
 }
