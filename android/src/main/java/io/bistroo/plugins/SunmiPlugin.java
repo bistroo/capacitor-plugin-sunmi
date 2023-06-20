@@ -211,6 +211,22 @@ public class SunmiPlugin extends Plugin {
         }
     }
 
+    @PluginMethod(returnType = PluginMethod.RETURN_NONE)
+    public void fontSize(PluginCall call) throws RemoteException {
+        if (mPrinterService != null) {
+            int size = call.getInt("size");
+
+            int acceptedFontSize = switch (size) {
+                case 2 -> 32;
+                case 3 -> 38;
+                case 4 -> 44;
+                default -> 24;
+            };
+
+            mPrinterService.setFontSize(acceptedFontSize, null);
+        }
+    }
+
     @PluginMethod
     public void deviceInfo(PluginCall call) throws RemoteException {
         if (mPrinterService != null) {

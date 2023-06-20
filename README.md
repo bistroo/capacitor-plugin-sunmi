@@ -38,6 +38,7 @@ interface SunmiPlugin {
   align(options: { direction: "LEFT" | "CENTER" | "RIGHT" }): void
   print(): Promise<void>
   image(options: { image: string }): void
+  fontSize(options: { size: 1 | 2 | 3 | 4 }): void
   deviceInfo(): Promise<{ serial_number: string, model: string }>
   addListener(
     eventName: 'printer-state',
