@@ -223,7 +223,7 @@ public class SunmiPlugin extends Plugin {
                 case 2 -> 32;
                 case 3 -> 38;
                 case 4 -> 44;
-                default -> size;
+                default -> 26;
             };
 
             mFontSize = acceptedFontSize;
