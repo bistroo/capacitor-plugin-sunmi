@@ -34,7 +34,7 @@ import java.util.ArrayList;
 public class SunmiPlugin extends Plugin {
     private static final String TAG = "SunmiPlugin";
     private int mFontSize = 26;
-    private String mFontName = "ubuntu-bold.ttf";
+    private String mFontName = "ubuntu-regular.ttf";
 
     SunmiPrinterService mPrinterService;
 
