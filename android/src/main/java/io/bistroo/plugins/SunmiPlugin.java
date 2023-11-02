@@ -33,6 +33,8 @@ import java.util.ArrayList;
 )
 public class SunmiPlugin extends Plugin {
     private static final String TAG = "SunmiPlugin";
+    private int mFontSize = 26;
+    private String mFontName = "ubuntu-regular.ttf";
 
     SunmiPrinterService mPrinterService;
 
@@ -82,7 +84,7 @@ public class SunmiPlugin extends Plugin {
             Boolean wrap = call.getBoolean("wrap");
 
             if (text != null) {
-                mPrinterService.printText(text, null);
+                mPrinterService.printTextWithFont(text, mFontName, mFontSize, null);
             }
 
             if (wrap != null && wrap) {
@@ -217,13 +219,32 @@ public class SunmiPlugin extends Plugin {
             int size = call.getInt("size");
 
             int acceptedFontSize = switch (size) {
+                case 1 -> 26;
                 case 2 -> 32;
                 case 3 -> 38;
                 case 4 -> 44;
-                default -> 24;
+                default -> size;
             };
 
+            mFontSize = acceptedFontSize;
             mPrinterService.setFontSize(acceptedFontSize, null);
+        }
+    }
+
+    @PluginMethod(returnType = PluginMethod.RETURN_NONE)
+    public void font(PluginCall call) throws RemoteException {
+        if (mPrinterService != null) {
+            int type = call.getInt("type");
+
+            String fontFile = switch (type) {
+                case 1 -> "ubuntu-regular.ttf";
+                case 2 -> "ubuntu-medium.ttf";
+                case 3 -> "ubuntu-bold.ttf";
+                default -> "ubuntu-regular.ttf";
+            };
+
+            mFontName = fontFile;
+            mPrinterService.setFontName(mFontName, null);
         }
     }
 
