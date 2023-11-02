@@ -237,9 +237,10 @@ public class SunmiPlugin extends Plugin {
             int type = call.getInt("type");
 
             String fontFile = switch (type) {
-                case 2 -> "ubuntu-regular.ttf";
-                case 3 -> "ubuntu-medium.ttf";
-                default -> "ubuntu-bold.ttf";
+                case 1 -> "ubuntu-regular.ttf";
+                case 2 -> "ubuntu-medium.ttf";
+                case 3 -> "ubuntu-bold.ttf";
+                default -> "ubuntu-regular.ttf";
             };
 
             mFontName = fontFile;
