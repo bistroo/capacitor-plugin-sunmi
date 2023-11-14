@@ -162,9 +162,24 @@ public class SunmiPlugin extends Plugin {
     public void print(PluginCall call) throws RemoteException {
         if (mPrinterService != null) {
             if (mPrinterService.updatePrinterState() != 1) {
-                Log.e(TAG, String.format("Failed with printer status: %d", mPrinterService.updatePrinterState()));
+                String error = switch (mPrinterService.updatePrinterState()) {
+                    case 1 -> "Printer is under normal operation";
+                    case 2 -> "Printer is under preparation";
+                    case 3 -> "Communication is abnormal";
+                    case 4 -> "Out of paper";
+                    case 5 -> "Overheated";
+                    case 6 -> "Cover is open";
+                    case 7 -> "Cutter error";
+                    case 8 -> "Cutter recovered";
+                    case 9 -> "Black mark not detected";
+                    case 505 -> "Printer not detected";
+                    case 507 -> "Printer firmware update failed";
+                    default -> "Unknown error occurred";
+                };
 
-                call.reject(String.valueOf(mPrinterService.updatePrinterState()));
+                Log.e(TAG, String.format("Failed with printer status: %s (%d)", error, mPrinterService.updatePrinterState()));
+
+                call.reject(String.format("%s (%d)", error, mPrinterService.updatePrinterState()));
 
                 return;
             }
