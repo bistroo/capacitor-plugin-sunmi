@@ -55,3 +55,7 @@ export type TableRow = {
 
 export const Sunmi: SunmiPlugin
 ```
+
+## License
+
+[MIT](https://opensource.org/licenses/MIT)
